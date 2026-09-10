@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request sent — Mai Barbers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f2ede4; --text:#211c19; --text-dim:#635a53; --accent:#8c6a2b; --accent-ink:#fffaf2; --border:rgba(33,28,25,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141110; --text:#f3ecdf; --text-dim:#ab9d8e; --accent:#dbac54; --accent-ink:#201405; --border:rgba(243,236,223,0.14);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141110; --text:#f3ecdf; --text-dim:#ab9d8e; --accent:#dbac54; --accent-ink:#201405; --border:rgba(243,236,223,0.14);
+  }
+  body{
+    margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+    font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;text-align:center;
+  }
+  .card{max-width:440px;}
+  h1{
+    font-family:'Big Shoulders Display',sans-serif;
+    text-transform:uppercase;font-weight:800;font-size:2.6rem;line-height:0.95;margin:0 0 14px;
+  }
+  p{color:var(--text-dim);margin:0 0 24px;}
+  a.btn{
+    display:inline-block;background:var(--accent);color:var(--accent-ink);
+    text-decoration:none;padding:0.85em 1.6em;border-radius:3px;font-weight:600;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Request sent</h1>
+    <p>Thanks — we've got your booking request and will text or call shortly to confirm your time.</p>
+    <a class="btn" href="/">Back to Mai Barbers</a>
+  </div>
+</body>
+</html>
