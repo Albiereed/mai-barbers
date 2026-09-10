@@ -1,0 +1,902 @@
+<title>Mai Barbers</title>
+<meta name="description" content="Mai Barbers — Princes Street, Dunedin. Sharp fades, straight lines, book online.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f2ede4;
+    --bg-alt:#e7ded0;
+    --surface:#fffdf9;
+    --surface-2:#eee5d6;
+    --text:#211c19;
+    --text-dim:#635a53;
+    --accent:#8c6a2b;
+    --accent-strong:#6f5320;
+    --accent-ink:#fffaf2;
+    --accent-2:#832c20;
+    --border:rgba(33,28,25,0.16);
+    --border-soft:rgba(33,28,25,0.09);
+    --shadow:0 1px 2px rgba(33,28,25,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141110;
+      --bg-alt:#1c1815;
+      --surface:#201b18;
+      --surface-2:#282220;
+      --text:#f3ecdf;
+      --text-dim:#ab9d8e;
+      --accent:#dbac54;
+      --accent-strong:#eec06a;
+      --accent-ink:#201405;
+      --accent-2:#d0654a;
+      --border:rgba(243,236,223,0.14);
+      --border-soft:rgba(243,236,223,0.08);
+      --shadow:0 1px 2px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141110;
+    --bg-alt:#1c1815;
+    --surface:#201b18;
+    --surface-2:#282220;
+    --text:#f3ecdf;
+    --text-dim:#ab9d8e;
+    --accent:#dbac54;
+    --accent-strong:#eec06a;
+    --accent-ink:#201405;
+    --accent-2:#d0654a;
+    --border:rgba(243,236,223,0.14);
+    --border-soft:rgba(243,236,223,0.08);
+    --shadow:0 1px 2px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;}
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',ui-sans-serif,system-ui,sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    line-height:0.92;
+    margin:0;
+    text-wrap:balance;
+    color:var(--text);
+  }
+  .mono{
+    font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+    font-variant-numeric:tabular-nums;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:500;
+  }
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding-inline:20px;
+  }
+  @media (min-width:640px){ .wrap{padding-inline:32px;} }
+
+  button, .btn{
+    font-family:'Archivo',sans-serif;
+    cursor:pointer;
+    border:none;
+    font-weight:600;
+  }
+  :focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+  }
+  a:focus-visible, button:focus-visible{border-radius:3px;}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:0.5em;
+    padding:0.85em 1.5em;
+    border-radius:3px;
+    font-size:0.95rem;
+    letter-spacing:0.02em;
+    text-decoration:none;
+    transition:transform 0.15s ease, background 0.15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .btn-solid{
+    background:var(--accent);
+    color:var(--accent-ink);
+    box-shadow:var(--shadow);
+  }
+  .btn-solid:hover{background:var(--accent-strong);transform:translateY(-1px);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- Top bar ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .topbar-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-block:14px;
+    gap:16px;
+  }
+  .wordmark{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;
+    text-transform:uppercase;
+    font-size:1.35rem;
+    letter-spacing:0.01em;
+    text-decoration:none;
+    display:flex;align-items:baseline;gap:0.4em;
+  }
+  .wordmark .dot{color:var(--accent);}
+  nav.primary{
+    display:flex;gap:28px;
+    font-size:0.9rem;
+    font-weight:600;
+  }
+  nav.primary a{text-decoration:none;color:var(--text-dim);transition:color .15s;}
+  nav.primary a:hover{color:var(--text);}
+  @media (max-width:720px){ nav.primary{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .hero-stripes{
+    position:absolute;
+    top:-20%;right:-12%;
+    width:420px;height:420px;
+    background:repeating-linear-gradient(
+      55deg,
+      var(--accent) 0px, var(--accent) 14px,
+      var(--accent-2) 14px, var(--accent-2) 28px,
+      transparent 28px, transparent 46px
+    );
+    opacity:0.16;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;
+    padding-block:64px 56px;
+    display:grid;
+    gap:20px;
+  }
+  @media (min-width:640px){ .hero-inner{padding-block:88px 68px;} }
+  .hero h1{
+    font-size:clamp(2.9rem, 9vw, 6rem);
+    font-weight:900;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--accent);
+  }
+  .hero-sub{
+    max-width:46ch;
+    font-size:1.05rem;
+    color:var(--text-dim);
+    margin-top:4px;
+  }
+  .hero-ctas{
+    display:flex;flex-wrap:wrap;gap:12px;
+    margin-top:10px;
+  }
+  .hero-meta{
+    display:flex;flex-wrap:wrap;
+    gap:8px 22px;
+    margin-top:22px;
+    font-size:0.85rem;
+    color:var(--text-dim);
+  }
+  .hero-meta span{display:flex;align-items:center;gap:8px;}
+  .hero-meta svg{flex:none;width:15px;height:15px;stroke:var(--accent);}
+
+  /* ---------- Ticker ---------- */
+  .ticker-band{
+    background:var(--bg-alt);
+    border-bottom:1px solid var(--border-soft);
+    overflow:hidden;
+    padding-block:11px;
+  }
+  .ticker-track{
+    display:flex;
+    width:max-content;
+    animation:scroll-left 32s linear infinite;
+  }
+  @keyframes scroll-left{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+  .ticker-track span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.78rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    padding-inline:18px;
+    white-space:nowrap;
+  }
+  .ticker-track span::after{content:"•";margin-left:18px;color:var(--accent);}
+
+  /* ---------- Section scaffolding ---------- */
+  section{padding-block:64px;}
+  .section-head{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:end;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:36px;
+  }
+  .section-head h2{font-size:clamp(2rem,5vw,2.9rem);}
+  .section-lede{max-width:42ch;color:var(--text-dim);font-size:0.98rem;}
+
+  /* ---------- Price board ---------- */
+  .board{
+    display:grid;
+    gap:36px;
+  }
+  @media (min-width:760px){ .board{grid-template-columns:1fr 1fr;} }
+  .board-group h3{
+    font-size:1.15rem;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:14px;
+    letter-spacing:0.02em;
+  }
+  .board-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding-block:13px;
+    border-bottom:1px dashed var(--border);
+  }
+  .board-row:first-of-type{border-top:1px dashed var(--border);}
+  .board-name{font-weight:600;font-size:1rem;}
+  .board-time{
+    font-size:0.78rem;
+    color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .board-fill{flex:1;border-bottom:2px dotted var(--border);transform:translateY(-4px);min-width:16px;}
+  .board-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:1.05rem;
+    color:var(--text);
+    white-space:nowrap;
+  }
+  .board-note{
+    margin-top:22px;
+    font-size:0.85rem;
+    color:var(--text-dim);
+  }
+
+  /* ---------- How it works ---------- */
+  .steps{
+    display:grid;
+    gap:28px;
+    counter-reset:step;
+  }
+  @media (min-width:560px){ .steps{grid-template-columns:repeat(2,1fr);} }
+  @media (min-width:960px){ .steps{grid-template-columns:repeat(4,1fr);} }
+  .step{
+    position:relative;
+    padding-top:8px;
+    border-top:2px solid var(--border);
+  }
+  .step .num{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;
+    font-size:2.6rem;
+    color:var(--accent);
+    line-height:1;
+    display:block;
+    margin-bottom:10px;
+  }
+  .step h3{
+    text-transform:none;
+    font-family:'Archivo',sans-serif;
+    font-weight:700;
+    font-size:1.12rem;
+    margin-bottom:8px;
+    color:var(--text);
+  }
+  .step p{margin:0;color:var(--text-dim);font-size:0.95rem;}
+
+  /* ---------- Why grid ---------- */
+  .why-grid{
+    display:grid;
+    gap:1px;
+    background:var(--border-soft);
+    border:1px solid var(--border-soft);
+  }
+  @media (min-width:640px){ .why-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (min-width:960px){ .why-grid{grid-template-columns:repeat(4,1fr);} }
+  .why-card{
+    background:var(--surface);
+    padding:26px 22px;
+  }
+  .why-card svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.6;margin-bottom:14px;}
+  .why-card h3{
+    text-transform:none;
+    font-family:'Archivo',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    margin-bottom:6px;
+  }
+  .why-card p{margin:0;font-size:0.9rem;color:var(--text-dim);}
+
+  /* ---------- Location ---------- */
+  .loc-wrap{
+    display:grid;
+    gap:36px;
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:4px;
+    padding:34px 28px;
+  }
+  @media (min-width:760px){ .loc-wrap{grid-template-columns:1.1fr 0.9fr;padding:44px;} }
+  .loc-addr{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:700;
+    font-size:1.8rem;
+    text-transform:uppercase;
+    line-height:1.1;
+  }
+  .loc-addr span{display:block;color:var(--accent);}
+  .loc-list{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:6px;font-size:0.92rem;color:var(--text-dim);}
+  .hours-table{width:100%;border-collapse:collapse;font-size:0.92rem;}
+  .hours-table td{padding:8px 0;border-bottom:1px solid var(--border-soft);}
+  .hours-table td:last-child{text-align:right;font-family:'IBM Plex Mono',monospace;color:var(--text);}
+  .hours-table tr:last-child td{border-bottom:none;}
+  .hours-caption{font-size:0.78rem;color:var(--text-dim);margin-top:10px;}
+
+  /* ---------- Final CTA ---------- */
+  .cta-band{
+    background:var(--accent);
+    color:var(--accent-ink);
+    border-radius:4px;
+    padding:46px 30px;
+    text-align:center;
+    display:grid;
+    gap:18px;
+    justify-items:center;
+  }
+  .cta-band h2{color:var(--accent-ink);font-size:clamp(1.9rem,5vw,2.7rem);}
+  .cta-band p{margin:0;color:var(--accent-ink);opacity:0.85;max-width:40ch;}
+  .cta-band .btn-solid{background:var(--accent-ink);color:var(--accent-strong);}
+  .cta-band .btn-solid:hover{background:var(--accent-ink);opacity:0.9;transform:translateY(-1px);}
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top:1px solid var(--border-soft);
+    padding-block:40px;
+    margin-top:20px;
+  }
+  .foot-grid{
+    display:flex;flex-wrap:wrap;
+    justify-content:space-between;
+    gap:26px 40px;
+  }
+  .foot-brand .wordmark{margin-bottom:8px;}
+  .foot-brand p{color:var(--text-dim);font-size:0.85rem;max-width:32ch;margin:0;}
+  .foot-col h4{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:0 0 10px;
+    font-weight:500;
+  }
+  .foot-col ul{list-style:none;margin:0;padding:0;display:grid;gap:7px;}
+  .foot-col a{text-decoration:none;font-size:0.9rem;color:var(--text);}
+  .foot-col a:hover{color:var(--accent);}
+  .foot-bottom{
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px solid var(--border-soft);
+    display:flex;flex-wrap:wrap;gap:10px 20px;
+    justify-content:space-between;
+    font-size:0.78rem;
+    color:var(--text-dim);
+  }
+
+  /* ---------- Booking form ---------- */
+  .book-card{
+    max-width:640px;
+    margin:0 auto;
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:4px;
+    padding:32px 24px;
+  }
+  @media (min-width:640px){ .book-card{padding:44px;} }
+  .form-row{
+    display:grid;
+    gap:18px;
+    margin-bottom:18px;
+  }
+  @media (min-width:560px){ .form-row.split{grid-template-columns:1fr 1fr;} }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{
+    font-size:0.8rem;
+    font-weight:600;
+    color:var(--text-dim);
+  }
+  .field .req{color:var(--accent-2);}
+  .field input, .field select, .field textarea{
+    font-family:'Archivo',sans-serif;
+    font-size:0.95rem;
+    color:var(--text);
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:3px;
+    padding:11px 12px;
+    width:100%;
+  }
+  .field textarea{resize:vertical;min-height:84px;}
+  .field input::placeholder, .field textarea::placeholder{color:var(--text-dim);opacity:0.7;}
+  .honeypot-field{position:absolute;left:-9999px;top:-9999px;}
+  .form-actions{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:8px;
+  }
+  .form-actions button{
+    border-radius:3px;
+    padding:0.9em 1.7em;
+    font-size:0.95rem;
+  }
+  .form-actions button:disabled{opacity:0.6;cursor:progress;}
+  .form-note{font-size:0.8rem;color:var(--text-dim);}
+  .form-status{
+    display:none;
+    border-radius:3px;
+    padding:14px 16px;
+    font-size:0.9rem;
+    margin-bottom:18px;
+    border:1px solid var(--border);
+  }
+  .form-status.is-visible{display:block;}
+  .form-status.success{
+    background:color-mix(in srgb, var(--accent) 14%, var(--surface));
+    border-color:var(--accent);
+    color:var(--text);
+  }
+  .form-status.error{
+    background:color-mix(in srgb, var(--accent-2) 14%, var(--surface));
+    border-color:var(--accent-2);
+    color:var(--text);
+  }
+
+  /* ---------- Mobile booking bar ---------- */
+  .book-bar{
+    display:none;
+    position:fixed;
+    left:0;right:0;bottom:0;
+    z-index:50;
+    background:color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--border-soft);
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  .book-bar-inner{
+    display:flex;align-items:center;gap:12px;
+  }
+  .book-bar-text{flex:1;min-width:0;}
+  .book-bar-text strong{display:block;font-size:0.88rem;font-weight:700;}
+  .book-bar-text span{display:block;font-size:0.74rem;color:var(--text-dim);}
+  .book-bar .btn-solid{padding:0.75em 1.2em;font-size:0.9rem;}
+  @media (max-width:720px){
+    .book-bar{display:block;}
+    body{padding-bottom:74px;}
+  }
+</style>
+
+<header class="top">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="wordmark">MAI<span class="dot">·</span>BARBERS</a>
+    <nav class="primary" aria-label="Primary">
+      <a href="#board">Services</a>
+      <a href="#how">How it works</a>
+      <a href="#find">Find us</a>
+    </nav>
+    <a class="btn btn-solid" href="#book">Book Now</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero" style="padding-block:0;">
+    <div class="hero-stripes" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Princes Street, Dunedin</p>
+      <h1>Sharp fades.<br><em>Straight lines.</em></h1>
+      <p class="hero-sub">Mai Barbers is Dunedin's spot for clean skin fades, classic cuts and proper beard work — right in the heart of the city. Walk in, or lock in your slot online in under a minute.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-solid" href="#book">Book your cut →</a>
+        <a class="btn btn-ghost" href="#board">See prices</a>
+      </div>
+      <p class="hours-caption" style="margin-top:2px;">Send us a request below with your preferred service and time — we'll text or call to lock it in.</p>
+      <div class="hero-meta">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 21s7-6.1 7-12A7 7 0 0 0 5 9c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>499 Princes Street, Dunedin</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 7v5l3.2 2"/><circle cx="12" cy="12" r="9"/></svg>Online booking, always open</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="m5 13 4 4L19 7"/></svg>Walk-ins welcome</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker-band" role="presentation">
+    <div class="ticker-track" aria-hidden="true">
+      <span>SKIN FADES</span><span>TAPER CUTS</span><span>BEARD TRIMS</span><span>HOT TOWEL SHAVES</span><span>KIDS CUTS</span><span>LINE-UPS</span>
+      <span>SKIN FADES</span><span>TAPER CUTS</span><span>BEARD TRIMS</span><span>HOT TOWEL SHAVES</span><span>KIDS CUTS</span><span>LINE-UPS</span>
+    </div>
+  </div>
+
+  <section id="board">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">The Board</p>
+          <h2>Cuts &amp; grooming</h2>
+        </div>
+        <p class="section-lede">Every cut finishes with a clean-up and a proper mirror check. Prices below are a starting guide — <span class="mono">confirm the latest list when you book.</span></p>
+      </div>
+
+      <div class="board">
+        <div class="board-group">
+          <h3>Cuts</h3>
+          <div class="board-row"><span class="board-name">Skin fade</span><span class="board-time">45 min</span><span class="board-fill"></span><span class="board-price">$45</span></div>
+          <div class="board-row"><span class="board-name">Taper cut</span><span class="board-time">40 min</span><span class="board-fill"></span><span class="board-price">$40</span></div>
+          <div class="board-row"><span class="board-name">Scissor cut</span><span class="board-time">40 min</span><span class="board-fill"></span><span class="board-price">$40</span></div>
+          <div class="board-row"><span class="board-name">Kids cut (12 &amp; under)</span><span class="board-time">30 min</span><span class="board-fill"></span><span class="board-price">$30</span></div>
+          <div class="board-row"><span class="board-name">Buzz cut</span><span class="board-time">20 min</span><span class="board-fill"></span><span class="board-price">$25</span></div>
+        </div>
+        <div class="board-group">
+          <h3>Grooming</h3>
+          <div class="board-row"><span class="board-name">Cut &amp; beard combo</span><span class="board-time">60 min</span><span class="board-fill"></span><span class="board-price">$60</span></div>
+          <div class="board-row"><span class="board-name">Beard trim &amp; line-up</span><span class="board-time">20 min</span><span class="board-fill"></span><span class="board-price">$20</span></div>
+          <div class="board-row"><span class="board-name">Hot towel shave</span><span class="board-time">30 min</span><span class="board-fill"></span><span class="board-price">$35</span></div>
+          <div class="board-row"><span class="board-name">Line-up only</span><span class="board-time">15 min</span><span class="board-fill"></span><span class="board-price">$15</span></div>
+          <div class="board-row"><span class="board-name">Hair &amp; beard colour</span><span class="board-time">from 45 min</span><span class="board-fill"></span><span class="board-price">from $50</span></div>
+        </div>
+      </div>
+      <p class="board-note">Placeholder guide prices — swap in your real list any time.</p>
+    </div>
+  </section>
+
+  <section id="how" style="background:var(--bg-alt);border-block:1px solid var(--border-soft);">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">How it works</p>
+          <h2>Booked in three steps</h2>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="num">01</span>
+          <h3>Send a request</h3>
+          <p>Fill in the booking form with your service, preferred day and time — takes about 30 seconds.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h3>We confirm it</h3>
+          <p>We'll text or call to lock in your exact time, same day where we can.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h3>Take a seat</h3>
+          <p>Walk in a few minutes early. First time in? Tell your barber what you're after and they'll take it from there.</p>
+        </div>
+        <div class="step">
+          <span class="num">04</span>
+          <h3>Walk out sharp</h3>
+          <p>Clean lines, tidy finish, mirror check before you go. Tip and rebook right at the chair.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Why Mai</p>
+          <h2>Built around the chair</h2>
+        </div>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <svg viewBox="0 0 24 24"><path d="M6 6a2.5 2.5 0 1 0-3 2.4L14 20l3-3L7.6 9A2.5 2.5 0 0 0 6 6Z"/><path d="m14 10 6-6"/><circle cx="6" cy="18" r="2.5"/></svg>
+          <h3>Barbers who listen</h3>
+          <p>A quick chat before the clippers come out, every time.</p>
+        </div>
+        <div class="why-card">
+          <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <h3>Request in seconds</h3>
+          <p>One quick form, no app or account needed to get on the books.</p>
+        </div>
+        <div class="why-card">
+          <svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 8v8l7 5 7-5V8"/></svg>
+          <h3>Right on Princes St</h3>
+          <p>Central Dunedin, easy to find, easy to get to.</p>
+        </div>
+        <div class="why-card">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h10"/></svg>
+          <h3>Walk-ins welcome</h3>
+          <p>Prefer to drop by? Come through — we'll fit you in where we can.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="find" style="background:var(--bg-alt);border-top:1px solid var(--border-soft);">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Find us</p>
+          <h2>Come see us</h2>
+        </div>
+      </div>
+
+      <div class="loc-wrap">
+        <div>
+          <p class="loc-addr">499 Princes St<span>Dunedin, 9016</span></p>
+          <ul class="loc-list">
+            <li>Central Dunedin — a short walk south of the Octagon</li>
+            <li>On-street parking along Princes Street</li>
+            <li>Wheelchair accessible entrance</li>
+          </ul>
+          <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;">
+            <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=499+Princes+Street+Dunedin+New+Zealand" target="_blank" rel="noopener">Get directions</a>
+            <a class="btn btn-ghost" href="#book">Book online</a>
+          </div>
+        </div>
+        <div>
+          <table class="hours-table">
+            <tbody>
+              <tr><td>Monday – Friday</td><td>9:00 – 5:30</td></tr>
+              <tr><td>Saturday</td><td>9:00 – 3:00</td></tr>
+              <tr><td>Sunday</td><td>Closed</td></tr>
+              <tr><td>Public holidays</td><td>Closed</td></tr>
+            </tbody>
+          </table>
+          <p class="hours-caption">Placeholder hours — update with your actual roster.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta-band">
+        <p class="eyebrow" style="color:var(--accent-ink);opacity:0.75;">Ready when you are</p>
+        <h2>Your next cut is one tap away</h2>
+        <p>Pick a time that suits and we'll have the chair warm.</p>
+        <a class="btn btn-solid" href="#book">Book Now →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="book">
+    <div class="wrap">
+      <div class="section-head" style="justify-content:center;text-align:center;">
+        <div>
+          <p class="eyebrow">Book a cut</p>
+          <h2>Request your time</h2>
+          <p class="section-lede" style="margin:10px auto 0;">Fill this in and we'll text or call to confirm — usually within the day.</p>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="form-status success" id="formSuccess" role="status" aria-live="polite">
+          <strong>Request sent — thanks!</strong> We'll be in touch shortly to confirm your time.
+        </div>
+        <div class="form-status error" id="formError" role="alert" aria-live="assertive">
+          <strong>Something went wrong.</strong> Please try again, or reach us on Instagram / Facebook in the meantime.
+        </div>
+
+        <form method="POST" action="https://formsubmit.co/you@example.com" id="bookingForm">
+          <input type="hidden" name="_subject" value="New booking request — Mai Barbers">
+          <input type="hidden" name="_next" value="thank-you.html">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <p class="honeypot-field" aria-hidden="true">
+            <label>Leave this field blank<input name="_honey" tabindex="-1" autocomplete="off"></label>
+          </p>
+
+          <div class="form-row split">
+            <div class="field">
+              <label for="name">Full name <span class="req">*</span></label>
+              <input type="text" id="name" name="name" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="phone">Phone <span class="req">*</span></label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="email">Email (optional)</label>
+              <input type="email" id="email" name="email" autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="service">Service <span class="req">*</span></label>
+              <select id="service" name="service" required>
+                <option value="" disabled selected>Choose a service</option>
+                <option>Skin fade — $45</option>
+                <option>Taper cut — $40</option>
+                <option>Scissor cut — $40</option>
+                <option>Kids cut — $30</option>
+                <option>Buzz cut — $25</option>
+                <option>Cut &amp; beard combo — $60</option>
+                <option>Beard trim &amp; line-up — $20</option>
+                <option>Hot towel shave — $35</option>
+                <option>Line-up only — $15</option>
+                <option>Hair &amp; beard colour — from $50</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row split">
+            <div class="field">
+              <label for="date">Preferred date <span class="req">*</span></label>
+              <input type="date" id="date" name="preferred_date" required>
+            </div>
+            <div class="field">
+              <label for="time">Preferred time <span class="req">*</span></label>
+              <input type="time" id="time" name="preferred_time" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="notes">Anything we should know (optional)</label>
+              <textarea id="notes" name="notes" placeholder="Barber preference, first visit, allergies, etc."></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-solid" type="submit" id="bookingSubmit">Send booking request</button>
+            <span class="form-note">We reply by text or call — no account needed.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="wordmark">MAI<span class="dot">·</span>BARBERS</a>
+        <p>Sharp fades and straight lines on Princes Street, Dunedin.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Visit</h4>
+        <ul>
+          <li>499 Princes Street</li>
+          <li>Dunedin 9016, New Zealand</li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/mai_barbers/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@maibarbers" target="_blank" rel="noopener">TikTok</a></li>
+          <li><a href="https://www.facebook.com/yourbarbersbarber23/" target="_blank" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Book</h4>
+        <ul>
+          <li><a href="#book">Book a cut</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr"></span> Mai Barbers</span>
+      <span>Dunedin, New Zealand</span>
+    </div>
+  </div>
+</footer>
+
+<div class="book-bar" role="complementary" aria-label="Quick booking">
+  <div class="wrap book-bar-inner">
+    <div class="book-bar-text">
+      <strong>Ready for a cut?</strong>
+      <span>Send a booking request</span>
+    </div>
+    <a class="btn btn-solid" href="#book">Book Now</a>
+  </div>
+</div>
+
+<script>
+  try{ document.getElementById('yr').textContent = new Date().getFullYear(); }catch(e){}
+
+  (function(){
+    var form = document.getElementById('bookingForm');
+    if(!form) return;
+    var successBox = document.getElementById('formSuccess');
+    var errorBox = document.getElementById('formError');
+    var submitBtn = document.getElementById('bookingSubmit');
+
+    // FormSubmit.co: posts to https://formsubmit.co/ajax/<email>, derived from
+    // the form's own action attribute so there's only one place to set your email.
+    var ajaxEndpoint = form.getAttribute('action').replace(
+      'https://formsubmit.co/', 'https://formsubmit.co/ajax/'
+    );
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      errorBox.classList.remove('is-visible');
+      successBox.classList.remove('is-visible');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      var formData = new FormData(form);
+      var payload = {};
+      formData.forEach(function(value, key){ payload[key] = value; });
+
+      fetch(ajaxEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(res){
+        if(res.ok){
+          successBox.classList.add('is-visible');
+          form.reset();
+          successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error('Form submission failed');
+        }
+      }).catch(function(){
+        errorBox.classList.add('is-visible');
+      }).finally(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send booking request';
+      });
+    });
+  })();
+</script>
