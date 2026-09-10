@@ -118,6 +118,14 @@
 
   .row-flex{ display:flex; gap:12px; flex-wrap:wrap; align-items:end; }
   .row-flex .field{ flex:1; min-width:140px; }
+
+  .barber-tabs{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .barber-tab{
+    padding:0.65em 1.2em; border-radius:3px; font-size:0.9rem; font-weight:600;
+    border:1px solid var(--border); background:var(--bg); color:var(--text); cursor:pointer;
+  }
+  .barber-tab.is-active{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .barber-tab:hover{ border-color:var(--accent); }
 </style>
 
 <div class="login-shell" id="loginShell">
@@ -151,7 +159,13 @@
     <div class="form-status error" id="adminError"></div>
 
     <div class="admin-card">
-      <h2>Weekly hours</h2>
+      <h2>Barber</h2>
+      <p class="section-lede">Hours, slot generation and one-off times below apply to whichever barber is selected here.</p>
+      <div class="barber-tabs" id="barberTabs"></div>
+    </div>
+
+    <div class="admin-card">
+      <h2 id="hoursHeading">Weekly hours</h2>
       <p class="section-lede">Tick which days you're open and set your hours, then generate bookable slots below.</p>
       <table class="admin-table">
         <thead><tr><th>Day</th><th>Open</th><th>Start</th><th>End</th></tr></thead>
@@ -163,7 +177,7 @@
     </div>
 
     <div class="admin-card">
-      <h2>Generate bookable slots</h2>
+      <h2 id="generateHeading">Generate bookable slots</h2>
       <p class="section-lede">Turns your weekly hours into actual times customers can pick. Safe to run anytime — it only adds new slots, never touches ones already booked.</p>
       <div class="row-flex" style="margin-top:16px;">
         <div class="field">
@@ -179,7 +193,7 @@
     </div>
 
     <div class="admin-card">
-      <h2>Add a one-off time</h2>
+      <h2 id="oneOffHeading">Add a one-off time</h2>
       <p class="section-lede">Open a single extra slot any time — handy for filling a gap outside your normal hours.</p>
       <div class="row-flex" style="margin-top:16px;">
         <div class="field">
@@ -201,7 +215,7 @@
     <div class="admin-card">
       <h2 id="upcomingHeading">Upcoming times</h2>
       <table class="admin-table">
-        <thead><tr><th>Date</th><th>Time</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Date</th><th>Time</th><th>Barber</th><th>Status</th><th></th></tr></thead>
         <tbody id="slotsBody"></tbody>
       </table>
       <p class="section-lede" id="slotsEmpty" style="display:none;margin-top:14px;">No upcoming times yet — set your weekly hours above and generate slots.</p>
@@ -210,7 +224,7 @@
     <div class="admin-card">
       <h2>Bookings</h2>
       <table class="admin-table">
-        <thead><tr><th>When</th><th>Customer</th><th>Service</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>When</th><th>Barber</th><th>Customer</th><th>Service</th><th>Status</th><th></th></tr></thead>
         <tbody id="bookingsBody"></tbody>
       </table>
       <p class="section-lede" id="bookingsEmpty" style="display:none;margin-top:14px;">No bookings yet.</p>
@@ -236,6 +250,10 @@
 
   var adminSuccess = document.getElementById('adminSuccess');
   var adminError = document.getElementById('adminError');
+  var barberTabsEl = document.getElementById('barberTabs');
+  var hoursHeading = document.getElementById('hoursHeading');
+  var generateHeading = document.getElementById('generateHeading');
+  var oneOffHeading = document.getElementById('oneOffHeading');
   var templateBody = document.getElementById('templateBody');
   var slotsBody = document.getElementById('slotsBody');
   var slotsEmpty = document.getElementById('slotsEmpty');
@@ -243,8 +261,52 @@
   var bookingsEmpty = document.getElementById('bookingsEmpty');
   var upcomingHeading = document.getElementById('upcomingHeading');
 
+  var barbers = [];        // [{id, name, role, is_active, sort_order}]
+  var activeBarberId = null;
   var template = [];   // 7 rows, weekday 0-6
   var busy = false;
+
+  function barberById(id){
+    for(var i=0;i<barbers.length;i++){ if(barbers[i].id === id) return barbers[i]; }
+    return null;
+  }
+
+  async function loadBarbers(){
+    var { data, error } = await supabase.from('barbers').select('*').order('sort_order', { ascending: true });
+    if(error){ showMsg(adminError, 'Could not load barbers: ' + error.message); return; }
+    barbers = data || [];
+    if(!activeBarberId || !barberById(activeBarberId)){
+      activeBarberId = barbers.length ? barbers[0].id : null;
+    }
+    renderBarberTabs();
+  }
+
+  function renderBarberTabs(){
+    barberTabsEl.innerHTML = '';
+    barbers.forEach(function(b){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'barber-tab' + (b.id === activeBarberId ? ' is-active' : '');
+      btn.textContent = b.name + (b.role ? ' — ' + b.role : '');
+      btn.addEventListener('click', async function(){
+        if(activeBarberId === b.id) return;
+        activeBarberId = b.id;
+        renderBarberTabs();
+        updateBarberHeadings();
+        await loadTemplate();
+      });
+      barberTabsEl.appendChild(btn);
+    });
+    updateBarberHeadings();
+  }
+
+  function updateBarberHeadings(){
+    var b = barberById(activeBarberId);
+    var name = b ? b.name : '';
+    hoursHeading.textContent = 'Weekly hours' + (name ? ' — ' + name : '');
+    generateHeading.textContent = 'Generate bookable slots' + (name ? ' — ' + name : '');
+    oneOffHeading.textContent = 'Add a one-off time' + (name ? ' — ' + name : '');
+  }
 
   function toHHMM(t){ return (t || '').toString().slice(0,5); }
 
@@ -307,7 +369,8 @@
   }
 
   async function loadTemplate(){
-    var { data, error } = await supabase.from('availability_template').select('*');
+    if(!activeBarberId){ template = defaultTemplate(); renderTemplate(); return; }
+    var { data, error } = await supabase.from('availability_template').select('*').eq('barber_id', activeBarberId);
     if(error){ showMsg(adminError, 'Could not load weekly hours: ' + error.message); return; }
     var rows = defaultTemplate();
     (data || []).forEach(function(found){
@@ -324,11 +387,12 @@
 
   async function saveTemplate(){
     clearMsgs();
+    if(!activeBarberId){ showMsg(adminError, 'No barber selected.'); return; }
     document.getElementById('saveTemplateBtn').disabled = true;
-    var del = await supabase.from('availability_template').delete().gte('weekday', 0);
+    var del = await supabase.from('availability_template').delete().eq('barber_id', activeBarberId);
     if(del.error){ showMsg(adminError, 'Could not save weekly hours: ' + del.error.message); document.getElementById('saveTemplateBtn').disabled = false; return; }
     var ins = await supabase.from('availability_template').insert(template.map(function(r){
-      return { weekday: r.weekday, is_active: r.is_active, start_time: r.start_time, end_time: r.end_time };
+      return { weekday: r.weekday, is_active: r.is_active, start_time: r.start_time, end_time: r.end_time, barber_id: activeBarberId };
     }));
     document.getElementById('saveTemplateBtn').disabled = false;
     if(ins.error){ showMsg(adminError, 'Could not save weekly hours: ' + ins.error.message); return; }
@@ -349,6 +413,7 @@
 
   async function generateSlots(){
     clearMsgs();
+    if(!activeBarberId){ showMsg(adminError, 'No barber selected.'); return; }
     var weeks = parseInt(document.getElementById('genWeeks').value, 10) || 8;
     var duration = parseInt(document.getElementById('genDuration').value, 10) || 45;
     var days = weeks * 7;
@@ -366,7 +431,7 @@
       while(cursor < tmpl.end_time){
         var next = addMinutes(cursor, duration);
         if(next > tmpl.end_time) break;
-        rows.push({ slot_date: dateToStr(d), start_time: cursor, end_time: next });
+        rows.push({ slot_date: dateToStr(d), start_time: cursor, end_time: next, barber_id: activeBarberId });
         cursor = next;
       }
     }
@@ -374,23 +439,25 @@
     if(rows.length === 0){ showMsg(adminError, 'No active weekly hours to generate from — set your hours above first.'); return; }
 
     document.getElementById('generateBtn').disabled = true;
-    var { error, count } = await supabase.from('slots').upsert(rows, { onConflict: 'slot_date,start_time', ignoreDuplicates: true, count: 'exact' });
+    var { error, count } = await supabase.from('slots').upsert(rows, { onConflict: 'slot_date,start_time,barber_id', ignoreDuplicates: true, count: 'exact' });
     document.getElementById('generateBtn').disabled = false;
 
     if(error){ showMsg(adminError, 'Could not generate slots: ' + error.message); return; }
-    showMsg(adminSuccess, 'Generated slots through the next ' + weeks + ' week(s).');
+    var b = barberById(activeBarberId);
+    showMsg(adminSuccess, 'Generated slots for ' + (b ? b.name : 'this barber') + ' through the next ' + weeks + ' week(s).');
     loadSlotsAndBookings();
   }
 
   async function addOneOff(){
     clearMsgs();
+    if(!activeBarberId){ showMsg(adminError, 'No barber selected.'); return; }
     var date = document.getElementById('oneOffDate').value;
     var start = document.getElementById('oneOffStart').value;
     var end = document.getElementById('oneOffEnd').value;
     if(!date || !start || !end){ showMsg(adminError, 'Fill in date, start and end time.'); return; }
 
     document.getElementById('addOneOffBtn').disabled = true;
-    var { error } = await supabase.from('slots').insert({ slot_date: date, start_time: start, end_time: end });
+    var { error } = await supabase.from('slots').insert({ slot_date: date, start_time: start, end_time: end, barber_id: activeBarberId });
     document.getElementById('addOneOffBtn').disabled = false;
 
     if(error){ showMsg(adminError, 'Could not add that time: ' + error.message); return; }
@@ -418,8 +485,8 @@
 
   async function loadSlotsAndBookings(){
     var today = dateToStr(new Date());
-    var slotsRes = await supabase.from('slots').select('*').gte('slot_date', today).order('slot_date').order('start_time').limit(1000);
-    var bookingsRes = await supabase.from('bookings').select('*, slots(slot_date, start_time, end_time)').order('created_at', { ascending: false }).limit(200);
+    var slotsRes = await supabase.from('slots').select('*, barbers(name)').gte('slot_date', today).order('slot_date').order('start_time').limit(1000);
+    var bookingsRes = await supabase.from('bookings').select('*, slots(slot_date, start_time, end_time, barbers(name))').order('created_at', { ascending: false }).limit(200);
 
     if(slotsRes.error){ showMsg(adminError, 'Could not load times: ' + slotsRes.error.message); return; }
     var slots = slotsRes.data || [];
@@ -434,6 +501,7 @@
       tr.innerHTML =
         '<td>' + s.slot_date + '</td>' +
         '<td class="mono">' + toHHMM(s.start_time) + ' – ' + toHHMM(s.end_time) + '</td>' +
+        '<td>' + (s.barbers ? s.barbers.name : '—') + '</td>' +
         '<td><span class="pill ' + (s.is_booked ? 'booked' : 'open') + '">' + (s.is_booked ? 'Booked' : 'Open') + '</span></td>' +
         '<td></td>';
       if(!s.is_booked){
@@ -451,9 +519,11 @@
     bookingsEmpty.style.display = bookings.length === 0 ? 'block' : 'none';
     bookings.forEach(function(b){
       var when = b.slots ? (b.slots.slot_date + ' ' + toHHMM(b.slots.start_time)) : '—';
+      var barberName = (b.slots && b.slots.barbers) ? b.slots.barbers.name : '—';
       var tr = document.createElement('tr');
       tr.innerHTML =
         '<td class="mono">' + when + '</td>' +
+        '<td>' + barberName + '</td>' +
         '<td>' + b.customer_name + '<br><span style="color:var(--text-dim);font-size:0.82rem;">' + b.customer_phone + (b.customer_email ? ' · ' + b.customer_email : '') + '</span>' +
           (b.notes ? '<div style="color:var(--text-dim);font-size:0.82rem;margin-top:4px;">' + b.notes + '</div>' : '') + '</td>' +
         '<td>' + (b.service || '—') + '</td>' +
@@ -472,6 +542,7 @@
   async function showDashboard(){
     loginShell.style.display = 'none';
     adminShell.style.display = 'block';
+    await loadBarbers();
     await loadTemplate();
     await loadSlotsAndBookings();
   }
