@@ -524,6 +524,81 @@
     .book-bar{display:block;}
     body{padding-bottom:74px;}
   }
+
+  /* ---------- Live booking widget ---------- */
+  .book-steps{display:grid;gap:26px;}
+  .book-step-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:10px;
+  }
+  .date-strip{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    scrollbar-width:thin;
+  }
+  .date-chip{
+    flex:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:var(--bg);
+    color:var(--text);
+    font-size:0.85rem;
+    min-width:64px;
+  }
+  .date-chip .d-dow{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;}
+  .date-chip .d-num{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;}
+  .date-chip.is-active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .date-chip.is-active .d-dow{color:var(--accent-ink);opacity:0.8;}
+  .date-chip:hover{border-color:var(--accent);}
+  .time-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+    gap:10px;
+  }
+  .time-btn{
+    padding:0.75em 0.6em;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.88rem;
+    text-align:center;
+  }
+  .time-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .time-btn.is-active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .book-empty{
+    color:var(--text-dim);
+    font-size:0.92rem;
+    padding:18px 0;
+  }
+  .selected-summary{
+    background:var(--bg-alt);
+    border:1px solid var(--border-soft);
+    border-radius:4px;
+    padding:14px 16px;
+    font-size:0.92rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .selected-summary strong{font-family:'IBM Plex Mono',monospace;}
+  .book-loading{color:var(--text-dim);font-size:0.9rem;padding:10px 0;}
+  #contactStep{display:none;}
+  #contactStep.is-visible{display:block;}
 </style>
 
 <header class="top">
@@ -545,15 +620,15 @@
     <div class="wrap hero-inner">
       <p class="eyebrow">Princes Street, Dunedin</p>
       <h1>Sharp fades.<br><em>Straight lines.</em></h1>
-      <p class="hero-sub">Mai Barbers is Dunedin's spot for clean skin fades, classic cuts and proper beard work — right in the heart of the city. Walk in, or lock in your slot online in under a minute.</p>
+      <p class="hero-sub">Mai Barbers is Dunedin's spot for clean skin fades, classic cuts and proper beard work — right in the heart of the city. Pick an open time below and it's locked in instantly.</p>
       <div class="hero-ctas">
         <a class="btn btn-solid" href="#book">Book your cut →</a>
         <a class="btn btn-ghost" href="#board">See prices</a>
       </div>
-      <p class="hours-caption" style="margin-top:2px;">Send us a request below with your preferred service and time — we'll text or call to lock it in.</p>
+      <p class="hours-caption" style="margin-top:2px;">Real availability, booked instantly — no waiting on a call back.</p>
       <div class="hero-meta">
         <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 21s7-6.1 7-12A7 7 0 0 0 5 9c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>499 Princes Street, Dunedin</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 7v5l3.2 2"/><circle cx="12" cy="12" r="9"/></svg>Online booking, always open</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 7v5l3.2 2"/><circle cx="12" cy="12" r="9"/></svg>Live online booking</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="m5 13 4 4L19 7"/></svg>Walk-ins welcome</span>
       </div>
     </div>
@@ -609,13 +684,13 @@
       <div class="steps">
         <div class="step">
           <span class="num">01</span>
-          <h3>Send a request</h3>
-          <p>Fill in the booking form with your service, preferred day and time — takes about 30 seconds.</p>
+          <h3>Pick a time</h3>
+          <p>Choose an open day and time straight off the live calendar — takes about 30 seconds.</p>
         </div>
         <div class="step">
           <span class="num">02</span>
-          <h3>We confirm it</h3>
-          <p>We'll text or call to lock in your exact time, same day where we can.</p>
+          <h3>It's locked in</h3>
+          <p>Your slot is confirmed the moment you book — no waiting on a call back.</p>
         </div>
         <div class="step">
           <span class="num">03</span>
@@ -717,89 +792,89 @@
       <div class="section-head" style="justify-content:center;text-align:center;">
         <div>
           <p class="eyebrow">Book a cut</p>
-          <h2>Request your time</h2>
-          <p class="section-lede" style="margin:10px auto 0;">Fill this in and we'll text or call to confirm — usually within the day.</p>
+          <h2>Pick your time</h2>
+          <p class="section-lede" style="margin:10px auto 0;">Real availability, straight off our calendar — confirmed the second you book.</p>
         </div>
       </div>
 
       <div class="book-card">
         <div class="form-status success" id="formSuccess" role="status" aria-live="polite">
-          <strong>Request sent — thanks!</strong> We'll be in touch shortly to confirm your time.
+          <strong>You're booked!</strong> <span id="successDetail"></span>
         </div>
         <div class="form-status error" id="formError" role="alert" aria-live="assertive">
-          <strong>Something went wrong.</strong> Please try again, or reach us on Instagram / Facebook in the meantime.
+          <strong id="errorHeadline">Something went wrong.</strong> <span id="errorDetail">Please try again, or reach us on Instagram / Facebook in the meantime.</span>
         </div>
 
-        <form method="POST" action="https://formsubmit.co/you@example.com" id="bookingForm">
-          <input type="hidden" name="_subject" value="New booking request — Mai Barbers">
-          <input type="hidden" name="_next" value="thank-you.html">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_captcha" value="false">
-          <p class="honeypot-field" aria-hidden="true">
-            <label>Leave this field blank<input name="_honey" tabindex="-1" autocomplete="off"></label>
-          </p>
+        <div id="bookingLoading" class="book-loading">Loading available times…</div>
 
-          <div class="form-row split">
-            <div class="field">
-              <label for="name">Full name <span class="req">*</span></label>
-              <input type="text" id="name" name="name" autocomplete="name" required>
-            </div>
-            <div class="field">
-              <label for="phone">Phone <span class="req">*</span></label>
-              <input type="tel" id="phone" name="phone" autocomplete="tel" required>
-            </div>
+        <div id="bookingWidget" class="book-steps" style="display:none;">
+          <div>
+            <p class="book-step-label">1 · Choose a day</p>
+            <div class="date-strip" id="dateStrip"></div>
           </div>
 
-          <div class="form-row">
-            <div class="field">
-              <label for="email">Email (optional)</label>
-              <input type="email" id="email" name="email" autocomplete="email">
-            </div>
+          <div id="timeStep">
+            <p class="book-step-label">2 · Choose a time</p>
+            <div class="time-grid" id="timeGrid"></div>
           </div>
 
-          <div class="form-row">
-            <div class="field">
-              <label for="service">Service <span class="req">*</span></label>
-              <select id="service" name="service" required>
-                <option value="" disabled selected>Choose a service</option>
-                <option>Skin fade — $45</option>
-                <option>Taper cut — $40</option>
-                <option>Scissor cut — $40</option>
-                <option>Kids cut — $30</option>
-                <option>Buzz cut — $25</option>
-                <option>Cut &amp; beard combo — $60</option>
-                <option>Beard trim &amp; line-up — $20</option>
-                <option>Hot towel shave — $35</option>
-                <option>Line-up only — $15</option>
-                <option>Hair &amp; beard colour — from $50</option>
-                <option>Not sure yet</option>
-              </select>
-            </div>
-          </div>
+          <div id="contactStep">
+            <p class="book-step-label">3 · Your details</p>
+            <div class="selected-summary" id="selectedSummary" style="margin-bottom:18px;"></div>
 
-          <div class="form-row split">
-            <div class="field">
-              <label for="date">Preferred date <span class="req">*</span></label>
-              <input type="date" id="date" name="preferred_date" required>
-            </div>
-            <div class="field">
-              <label for="time">Preferred time <span class="req">*</span></label>
-              <input type="time" id="time" name="preferred_time" required>
-            </div>
-          </div>
+            <form id="bookingForm">
+              <div class="form-row split">
+                <div class="field">
+                  <label for="name">Full name <span class="req">*</span></label>
+                  <input type="text" id="name" name="name" autocomplete="name" required>
+                </div>
+                <div class="field">
+                  <label for="phone">Phone <span class="req">*</span></label>
+                  <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+                </div>
+              </div>
 
-          <div class="form-row">
-            <div class="field">
-              <label for="notes">Anything we should know (optional)</label>
-              <textarea id="notes" name="notes" placeholder="Barber preference, first visit, allergies, etc."></textarea>
-            </div>
-          </div>
+              <div class="form-row">
+                <div class="field">
+                  <label for="email">Email (optional)</label>
+                  <input type="email" id="email" name="email" autocomplete="email">
+                </div>
+              </div>
 
-          <div class="form-actions">
-            <button class="btn btn-solid" type="submit" id="bookingSubmit">Send booking request</button>
-            <span class="form-note">We reply by text or call — no account needed.</span>
+              <div class="form-row">
+                <div class="field">
+                  <label for="service">Service <span class="req">*</span></label>
+                  <select id="service" name="service" required>
+                    <option value="" disabled selected>Choose a service</option>
+                    <option>Skin fade — $45</option>
+                    <option>Taper cut — $40</option>
+                    <option>Scissor cut — $40</option>
+                    <option>Kids cut — $30</option>
+                    <option>Buzz cut — $25</option>
+                    <option>Cut &amp; beard combo — $60</option>
+                    <option>Beard trim &amp; line-up — $20</option>
+                    <option>Hot towel shave — $35</option>
+                    <option>Line-up only — $15</option>
+                    <option>Hair &amp; beard colour — from $50</option>
+                    <option>Not sure yet</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="notes">Anything we should know (optional)</label>
+                  <textarea id="notes" name="notes" placeholder="Barber preference, first visit, allergies, etc."></textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-solid" type="submit" id="bookingSubmit">Confirm booking</button>
+                <span class="form-note">Instant confirmation — no account needed.</span>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </section>
@@ -846,57 +921,204 @@
   <div class="wrap book-bar-inner">
     <div class="book-bar-text">
       <strong>Ready for a cut?</strong>
-      <span>Send a booking request</span>
+      <span>Book an open time</span>
     </div>
     <a class="btn btn-solid" href="#book">Book Now</a>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   try{ document.getElementById('yr').textContent = new Date().getFullYear(); }catch(e){}
 
   (function(){
-    var form = document.getElementById('bookingForm');
-    if(!form) return;
+    var SUPABASE_URL = 'https://avwfycopvlmmyhzdgmqs.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_ltaNA7nnVozoSCOcZIjg';
+    var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    var loadingEl = document.getElementById('bookingLoading');
+    var widgetEl = document.getElementById('bookingWidget');
+    var dateStripEl = document.getElementById('dateStrip');
+    var timeGridEl = document.getElementById('timeGrid');
+    var contactStepEl = document.getElementById('contactStep');
+    var selectedSummaryEl = document.getElementById('selectedSummary');
     var successBox = document.getElementById('formSuccess');
+    var successDetail = document.getElementById('successDetail');
     var errorBox = document.getElementById('formError');
+    var errorHeadline = document.getElementById('errorHeadline');
+    var errorDetail = document.getElementById('errorDetail');
+    var form = document.getElementById('bookingForm');
     var submitBtn = document.getElementById('bookingSubmit');
 
-    // FormSubmit.co: posts to https://formsubmit.co/ajax/<email>, derived from
-    // the form's own action attribute so there's only one place to set your email.
-    var ajaxEndpoint = form.getAttribute('action').replace(
-      'https://formsubmit.co/', 'https://formsubmit.co/ajax/'
-    );
+    var allSlots = [];      // flat list of open slots from Supabase
+    var byDate = {};        // slot_date -> [slots]
+    var selectedDate = null;
+    var selectedSlot = null;
 
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
+    var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    function fmtTime(hhmmss){
+      var parts = hhmmss.split(':');
+      var h = parseInt(parts[0], 10);
+      var m = parts[1];
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12; if(h12 === 0) h12 = 12;
+      return h12 + ':' + m + ' ' + ampm;
+    }
+
+    function fmtDateLong(dateStr){
+      var d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-NZ', { weekday:'long', day:'numeric', month:'long' });
+    }
+
+    function showError(headline, detail){
+      errorHeadline.textContent = headline || 'Something went wrong.';
+      errorDetail.textContent = detail || 'Please try again, or reach us on Instagram / Facebook in the meantime.';
+      errorBox.classList.add('is-visible');
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearMessages(){
       errorBox.classList.remove('is-visible');
       successBox.classList.remove('is-visible');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
+    }
 
-      var formData = new FormData(form);
-      var payload = {};
-      formData.forEach(function(value, key){ payload[key] = value; });
+    async function loadSlots(){
+      clearMessages();
+      loadingEl.style.display = 'block';
+      widgetEl.style.display = 'none';
 
-      fetch(ajaxEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function(res){
-        if(res.ok){
-          successBox.classList.add('is-visible');
-          form.reset();
-          successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          throw new Error('Form submission failed');
-        }
-      }).catch(function(){
-        errorBox.classList.add('is-visible');
-      }).finally(function(){
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send booking request';
+      var { data, error } = await supabase
+        .from('slots')
+        .select('id, slot_date, start_time, end_time')
+        .order('slot_date', { ascending: true })
+        .order('start_time', { ascending: true })
+        .limit(500);
+
+      loadingEl.style.display = 'none';
+
+      if(error){
+        widgetEl.style.display = 'none';
+        showError('Couldn\'t load available times.', 'Please refresh the page, or reach us on Instagram / Facebook to book.');
+        return;
+      }
+
+      allSlots = data || [];
+      byDate = {};
+      allSlots.forEach(function(s){
+        if(!byDate[s.slot_date]) byDate[s.slot_date] = [];
+        byDate[s.slot_date].push(s);
       });
-    });
+
+      if(allSlots.length === 0){
+        widgetEl.style.display = 'none';
+        loadingEl.style.display = 'block';
+        loadingEl.textContent = 'No open times right now — check back soon, or message us on Instagram / Facebook.';
+        return;
+      }
+
+      widgetEl.style.display = 'grid';
+      renderDateStrip();
+
+      var dates = Object.keys(byDate).sort();
+      selectDate(selectedDate && byDate[selectedDate] ? selectedDate : dates[0]);
+    }
+
+    function renderDateStrip(){
+      var dates = Object.keys(byDate).sort();
+      dateStripEl.innerHTML = '';
+      dates.forEach(function(dateStr){
+        var d = new Date(dateStr + 'T00:00:00');
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'date-chip' + (dateStr === selectedDate ? ' is-active' : '');
+        btn.innerHTML = '<span class="d-dow">' + DOW[d.getDay()] + '</span><span class="d-num">' + d.getDate() + '</span>';
+        btn.addEventListener('click', function(){ selectDate(dateStr); });
+        dateStripEl.appendChild(btn);
+      });
+    }
+
+    function selectDate(dateStr){
+      selectedDate = dateStr;
+      selectedSlot = null;
+      contactStepEl.classList.remove('is-visible');
+      renderDateStrip();
+      renderTimeGrid();
+    }
+
+    function renderTimeGrid(){
+      timeGridEl.innerHTML = '';
+      var slots = (byDate[selectedDate] || []).slice().sort(function(a,b){
+        return a.start_time < b.start_time ? -1 : (a.start_time > b.start_time ? 1 : 0);
+      });
+      if(slots.length === 0){
+        var p = document.createElement('p');
+        p.className = 'book-empty';
+        p.textContent = 'No open times this day — pick another date above.';
+        timeGridEl.appendChild(p);
+        return;
+      }
+      slots.forEach(function(s){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-btn' + (selectedSlot && selectedSlot.id === s.id ? ' is-active' : '');
+        btn.textContent = fmtTime(s.start_time);
+        btn.addEventListener('click', function(){ selectSlot(s); });
+        timeGridEl.appendChild(btn);
+      });
+    }
+
+    function selectSlot(s){
+      selectedSlot = s;
+      renderTimeGrid();
+      selectedSummaryEl.innerHTML = 'You\'ve picked <strong>' + fmtDateLong(s.slot_date) + ' at ' + fmtTime(s.start_time) + '</strong>';
+      contactStepEl.classList.add('is-visible');
+      contactStepEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    if(form){
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        clearMessages();
+        if(!selectedSlot){ showError('Pick a time first.', 'Choose an open day and time above, then fill in your details.'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Booking…';
+
+        var name = document.getElementById('name').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var service = document.getElementById('service').value;
+        var notes = document.getElementById('notes').value.trim();
+
+        var { data, error } = await supabase.rpc('book_slot', {
+          p_slot_id: selectedSlot.id,
+          p_name: name,
+          p_phone: phone,
+          p_email: email || null,
+          p_service: service || null,
+          p_notes: notes || null
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm booking';
+
+        if(error){
+          showError('That time just got taken.', 'Someone else booked it a moment ago — pick another time below.');
+          await loadSlots();
+          return;
+        }
+
+        successDetail.textContent = fmtDateLong(selectedSlot.slot_date) + ' at ' + fmtTime(selectedSlot.start_time) + '. See you then!';
+        successBox.classList.add('is-visible');
+        successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        form.reset();
+        contactStepEl.classList.remove('is-visible');
+        selectedSlot = null;
+        await loadSlots();
+      });
+    }
+
+    loadSlots();
   })();
 </script>
