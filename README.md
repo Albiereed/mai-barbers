@@ -1,53 +1,58 @@
-# Mai Barbers — website + booking form
+# Mai Barbers — booking website
 
-This repo is a complete, ready-to-deploy website:
+A mobile-friendly booking website for Mai Barbers, live at
+**https://mai-barbers.vercel.app**
 
-- `index.html` — the full site, including a working booking **request form** (name, phone, service, preferred date/time, notes)
-- `thank-you.html` — the confirmation page a visitor lands on if their browser has JavaScript turned off
+Customers pick a real open day and time straight off the calendar on the homepage,
+enter their name and phone number, and the booking is confirmed instantly — the
+slot is locked the moment they book so nobody else can take it.
 
-There's no old booking system linked anywhere — requests are collected straight off this site and land in your own inbox.
+The admin signs in at **`/admin.html`** to set weekly opening hours, generate
+bookable slots, add one-off times, and view or cancel bookings.
 
-## The two free pieces
+## How it's built
 
-1. **Vercel** hosts the site itself and gives you the live link (and later your own domain).
-2. **FormSubmit.co** catches the booking form and emails you each request — Vercel only hosts files, it doesn't process forms on its own, and FormSubmit is a free, no-signup way to fill that gap without writing any backend code.
+This is a plain static site (`index.html`, `admin.html`) — no build step, no
+server code. All the booking logic runs in the browser against a
+[Supabase](https://supabase.com) Postgres database:
 
-## 1. Point the form at your email (2 minutes)
+- **`slots`** — individual bookable times (date, start, end, booked or not)
+- **`bookings`** — who booked what
+- **`availability_template`** — the weekly hours used to generate new slots
+- Row Level Security keeps this safe: anyone can see and book an *open* slot,
+  but only a signed-in admin can see bookings, edit hours, or manage slots.
+  Booking itself goes through a `book_slot` database function that locks the
+  row so two people can never grab the same time.
 
-Open `index.html` in this repo, find this line near the booking form (search for `formsubmit`):
+Because everything is static, it deploys anywhere for free — this project is
+hosted on [Vercel](https://vercel.com), connected to this GitHub repo, so any
+change pushed to `main` goes live within a minute or two.
 
-```html
-<form method="POST" action="https://formsubmit.co/you@example.com" id="bookingForm">
+## Day-to-day use
+
+- **Set your hours / generate times / manage bookings** — sign in at
+  `https://mai-barbers.vercel.app/admin.html`. No code changes needed for any
+  of this.
+- **Change wording, prices, colours, photos** — edit `index.html` on GitHub
+  (or ask Claude to) and push. Vercel redeploys automatically.
+
+## The Supabase project
+
+Project: **mai-barbers**, region Oceania (Sydney). The site connects to it
+with a public "publishable" key that's safe to expose in the page source —
+Row Level Security is what actually keeps data safe, not the key. The admin
+password is set via Supabase's own invite-email flow and is never stored in
+this repo.
+
+If you ever need to change database settings, sign in at
+[supabase.com](https://supabase.com) → the **mai-barbers** project.
+
+## Local development (optional)
+
+There's nothing to install or build — these are plain HTML files. Open
+`index.html` directly in a browser, or serve the folder with any static
+file server:
+
 ```
-
-Replace `you@example.com` with the email you want bookings sent to, and commit the change.
-
-**Important — activate it:** the very first submission FormSubmit receives for a new email address triggers a one-time confirmation email to that address. Open it and click **Confirm** or bookings won't come through. Easiest way to trigger that: deploy the site (step 2), then submit the booking form yourself once with test details.
-
-## 2. Connect this repo to Vercel
-
-1. Go to **vercel.com** and sign in (you can sign in with your GitHub account).
-2. Click **Add New → Project → Import Git Repository**, and choose this `mai-barbers` repo.
-3. Leave the build settings as default — it's plain HTML, no build step needed — and click **Deploy**.
-4. You'll get a live link immediately, like `https://mai-barbers.vercel.app` — that already works from any phone or computer, anywhere.
-
-From then on, any change pushed to this repo (including edits made right in GitHub's web editor) redeploys automatically — no re-uploading files.
-
-## 3. Connect your own domain
-
-Buying a domain isn't free (usually ~NZ$20–45/year — e.g. a `.co.nz` or `.com` from a registrar like Namecheap, GoDaddy, or a `.nz`-approved NZ registrar), but attaching it to Vercel is:
-
-1. In your Vercel project: **Settings → Domains → Add**.
-2. Type your domain and follow the on-screen instructions — either point your domain's nameservers at Vercel, or add the A/CNAME records it gives you at your registrar.
-3. Vercel issues a free SSL certificate automatically once the DNS change is detected (can take anywhere from a few minutes to a few hours).
-
-## 4. Making changes later
-
-- Small edits (prices, hours, phone number, text): edit `index.html` right in GitHub (click the file, then the pencil/edit icon), commit the change, and Vercel redeploys automatically within a minute or two. I can also make these edits for you any time — just send me what should change.
-- Prices and hours on the current site are placeholders — search `index.html` for the `$` prices and the hours table to swap in your real numbers.
-
-## Notes
-
-- The booking form only works once the site is deployed and your FormSubmit email is confirmed (see step 1) — opening `index.html` directly on your computer won't send anything anywhere.
-- Real info already on the site: business name, address (499 Princes Street, Dunedin), and your Instagram/TikTok/Facebook links.
-- Still placeholders to update: service prices, opening hours, and there's no phone number on the site yet — send it over and I'll add it.
+npx serve .
+```
