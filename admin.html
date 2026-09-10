@@ -1,0 +1,515 @@
+<title>Mai Barbers — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f2ede4;
+    --bg-alt:#e7ded0;
+    --surface:#fffdf9;
+    --surface-2:#eee5d6;
+    --text:#211c19;
+    --text-dim:#635a53;
+    --accent:#8c6a2b;
+    --accent-strong:#6f5320;
+    --accent-ink:#fffaf2;
+    --accent-2:#832c20;
+    --border:rgba(33,28,25,0.16);
+    --border-soft:rgba(33,28,25,0.09);
+    --shadow:0 1px 2px rgba(33,28,25,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141110; --bg-alt:#1c1815; --surface:#201b18; --surface-2:#282220;
+      --text:#f3ecdf; --text-dim:#ab9d8e; --accent:#dbac54; --accent-strong:#eec06a;
+      --accent-ink:#201405; --accent-2:#d0654a; --border:rgba(243,236,223,0.14);
+      --border-soft:rgba(243,236,223,0.08); --shadow:0 1px 2px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141110; --bg-alt:#1c1815; --surface:#201b18; --surface-2:#282220;
+    --text:#f3ecdf; --text-dim:#ab9d8e; --accent:#dbac54; --accent-strong:#eec06a;
+    --accent-ink:#201405; --accent-2:#d0654a; --border:rgba(243,236,223,0.14);
+    --border-soft:rgba(243,236,223,0.08); --shadow:0 1px 2px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+    font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Big Shoulders Display',ui-sans-serif,system-ui,sans-serif;
+    text-transform:uppercase; letter-spacing:0.01em; line-height:0.95; margin:0;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  a{color:inherit;}
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .wordmark{
+    font-family:'Big Shoulders Display',sans-serif; font-weight:800; text-transform:uppercase;
+    font-size:1.3rem; letter-spacing:0.01em; text-decoration:none; display:flex; align-items:baseline; gap:0.4em;
+  }
+  .wordmark .dot{color:var(--accent);}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:0.5em; padding:0.75em 1.4em; border-radius:3px;
+    font-size:0.9rem; font-weight:600; border:none; cursor:pointer; text-decoration:none;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-solid{ background:var(--accent); color:var(--accent-ink); box-shadow:var(--shadow); }
+  .btn-solid:hover{ background:var(--accent-strong); transform:translateY(-1px); }
+  .btn-solid:disabled{ opacity:0.6; cursor:progress; transform:none; }
+  .btn-ghost{ background:transparent; color:var(--text); border:1px solid var(--border); }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+  .btn-danger{ background:transparent; color:var(--accent-2); border:1px solid var(--accent-2); padding:0.4em 0.9em; font-size:0.8rem; }
+  .btn-danger:hover{ background:var(--accent-2); color:#fff; }
+
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label{ font-size:0.8rem; font-weight:600; color:var(--text-dim); }
+  .field input, .field select{
+    font-family:'Archivo',sans-serif; font-size:0.95rem; color:var(--text); background:var(--bg);
+    border:1px solid var(--border); border-radius:3px; padding:10px 12px; width:100%;
+  }
+
+  /* ---- Login screen ---- */
+  .login-shell{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .login-card{
+    max-width:380px; width:100%; background:var(--surface); border:1px solid var(--border-soft);
+    border-radius:6px; padding:36px 30px;
+  }
+  .login-card h1{ font-size:1.6rem; margin-bottom:6px; }
+  .login-card p.lede{ color:var(--text-dim); font-size:0.9rem; margin:0 0 22px; }
+  .login-card form{ display:grid; gap:16px; }
+
+  /* ---- Dashboard shell ---- */
+  .admin-shell{ display:none; }
+  .admin-header{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; background:color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);
+  }
+  .admin-main{ max-width:920px; margin:0 auto; padding:28px 20px 80px; display:grid; gap:24px; }
+  .admin-card{
+    background:var(--surface); border:1px solid var(--border-soft); border-radius:6px; padding:24px;
+  }
+  .admin-card h2{ font-size:1.4rem; margin-bottom:6px; }
+  .section-lede{ color:var(--text-dim); font-size:0.9rem; margin:0; }
+
+  .admin-table{ width:100%; border-collapse:collapse; font-size:0.9rem; margin-top:14px; }
+  .admin-table th{ text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); padding:8px 6px; border-bottom:1px solid var(--border); }
+  .admin-table td{ padding:10px 6px; border-bottom:1px solid var(--border-soft); vertical-align:middle; }
+  .admin-table tr:last-child td{ border-bottom:none; }
+
+  .pill{ display:inline-block; padding:0.25em 0.7em; border-radius:20px; font-size:0.75rem; font-weight:600; }
+  .pill.open{ background:color-mix(in srgb, var(--accent) 18%, var(--surface)); color:var(--accent-strong); }
+  .pill.booked{ background:color-mix(in srgb, var(--accent-2) 18%, var(--surface)); color:var(--accent-2); }
+  .pill.cancelled{ background:var(--surface-2); color:var(--text-dim); }
+
+  .form-status{ border-radius:4px; padding:12px 14px; font-size:0.88rem; margin-bottom:16px; border:1px solid var(--border); display:none; }
+  .form-status.is-visible{ display:block; }
+  .form-status.success{ background:color-mix(in srgb, var(--accent) 14%, var(--surface)); border-color:var(--accent); }
+  .form-status.error{ background:color-mix(in srgb, var(--accent-2) 14%, var(--surface)); border-color:var(--accent-2); }
+
+  .row-flex{ display:flex; gap:12px; flex-wrap:wrap; align-items:end; }
+  .row-flex .field{ flex:1; min-width:140px; }
+</style>
+
+<div class="login-shell" id="loginShell">
+  <div class="login-card">
+    <a href="/" class="wordmark">MAI<span class="dot">·</span>BARBERS</a>
+    <h1 style="margin-top:18px;">Admin login</h1>
+    <p class="lede">Sign in to manage your hours, bookable times, and bookings.</p>
+    <div class="form-status error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-solid" type="submit" id="loginSubmit" style="justify-content:center;">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<div class="admin-shell" id="adminShell">
+  <div class="admin-header">
+    <a href="/" class="wordmark">MAI<span class="dot">·</span>BARBERS <span style="color:var(--text-dim);font-size:0.65rem;margin-left:8px;letter-spacing:0.1em;">ADMIN</span></a>
+    <button class="btn btn-ghost" id="signOutBtn" type="button">Sign out</button>
+  </div>
+
+  <div class="admin-main">
+    <div class="form-status success" id="adminSuccess"></div>
+    <div class="form-status error" id="adminError"></div>
+
+    <div class="admin-card">
+      <h2>Weekly hours</h2>
+      <p class="section-lede">Tick which days you're open and set your hours, then generate bookable slots below.</p>
+      <table class="admin-table">
+        <thead><tr><th>Day</th><th>Open</th><th>Start</th><th>End</th></tr></thead>
+        <tbody id="templateBody"></tbody>
+      </table>
+      <div style="margin-top:18px;">
+        <button class="btn btn-solid" id="saveTemplateBtn" type="button">Save weekly hours</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Generate bookable slots</h2>
+      <p class="section-lede">Turns your weekly hours into actual times customers can pick. Safe to run anytime — it only adds new slots, never touches ones already booked.</p>
+      <div class="row-flex" style="margin-top:16px;">
+        <div class="field">
+          <label for="genWeeks">Weeks ahead</label>
+          <input type="number" id="genWeeks" value="8" min="1" max="26">
+        </div>
+        <div class="field">
+          <label for="genDuration">Slot length (minutes)</label>
+          <input type="number" id="genDuration" value="45" min="5" max="240" step="5">
+        </div>
+        <button class="btn btn-solid" id="generateBtn" type="button">Generate slots</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Add a one-off time</h2>
+      <p class="section-lede">Open a single extra slot any time — handy for filling a gap outside your normal hours.</p>
+      <div class="row-flex" style="margin-top:16px;">
+        <div class="field">
+          <label for="oneOffDate">Date</label>
+          <input type="date" id="oneOffDate">
+        </div>
+        <div class="field">
+          <label for="oneOffStart">Start</label>
+          <input type="time" id="oneOffStart">
+        </div>
+        <div class="field">
+          <label for="oneOffEnd">End</label>
+          <input type="time" id="oneOffEnd">
+        </div>
+        <button class="btn btn-solid" id="addOneOffBtn" type="button">Add time</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2 id="upcomingHeading">Upcoming times</h2>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Time</th><th>Status</th><th></th></tr></thead>
+        <tbody id="slotsBody"></tbody>
+      </table>
+      <p class="section-lede" id="slotsEmpty" style="display:none;margin-top:14px;">No upcoming times yet — set your weekly hours above and generate slots.</p>
+    </div>
+
+    <div class="admin-card">
+      <h2>Bookings</h2>
+      <table class="admin-table">
+        <thead><tr><th>When</th><th>Customer</th><th>Service</th><th>Status</th><th></th></tr></thead>
+        <tbody id="bookingsBody"></tbody>
+      </table>
+      <p class="section-lede" id="bookingsEmpty" style="display:none;margin-top:14px;">No bookings yet.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var SUPABASE_URL = 'https://avwfycopvlmmyhzdgmqs.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_ltaNA7nnVozoSCOcZIjg';
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var WEEKDAY_LABELS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  var loginShell = document.getElementById('loginShell');
+  var adminShell = document.getElementById('adminShell');
+  var loginForm = document.getElementById('loginForm');
+  var loginError = document.getElementById('loginError');
+  var loginSubmit = document.getElementById('loginSubmit');
+  var signOutBtn = document.getElementById('signOutBtn');
+
+  var adminSuccess = document.getElementById('adminSuccess');
+  var adminError = document.getElementById('adminError');
+  var templateBody = document.getElementById('templateBody');
+  var slotsBody = document.getElementById('slotsBody');
+  var slotsEmpty = document.getElementById('slotsEmpty');
+  var bookingsBody = document.getElementById('bookingsBody');
+  var bookingsEmpty = document.getElementById('bookingsEmpty');
+  var upcomingHeading = document.getElementById('upcomingHeading');
+
+  var template = [];   // 7 rows, weekday 0-6
+  var busy = false;
+
+  function toHHMM(t){ return (t || '').toString().slice(0,5); }
+
+  function showMsg(el, text){
+    el.textContent = text;
+    el.classList.add('is-visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function clearMsgs(){
+    adminSuccess.classList.remove('is-visible');
+    adminError.classList.remove('is-visible');
+  }
+
+  function defaultTemplate(){
+    var rows = [];
+    for(var w=0; w<7; w++){
+      rows.push({
+        weekday: w,
+        is_active: w >= 1 && w <= 5,
+        start_time: '09:00',
+        end_time: w === 6 ? '15:00' : '17:30'
+      });
+    }
+    return rows;
+  }
+
+  function renderTemplate(){
+    templateBody.innerHTML = '';
+    template.forEach(function(row, i){
+      var tr = document.createElement('tr');
+
+      var dayTd = document.createElement('td');
+      dayTd.textContent = WEEKDAY_LABELS[row.weekday];
+      tr.appendChild(dayTd);
+
+      var openTd = document.createElement('td');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = row.is_active;
+      cb.addEventListener('change', function(){ template[i].is_active = cb.checked; renderTemplate(); });
+      openTd.appendChild(cb);
+      tr.appendChild(openTd);
+
+      var startTd = document.createElement('td');
+      var startInp = document.createElement('input');
+      startInp.type = 'time'; startInp.value = row.start_time; startInp.disabled = !row.is_active;
+      startInp.addEventListener('change', function(){ template[i].start_time = startInp.value; });
+      startTd.appendChild(startInp);
+      tr.appendChild(startTd);
+
+      var endTd = document.createElement('td');
+      var endInp = document.createElement('input');
+      endInp.type = 'time'; endInp.value = row.end_time; endInp.disabled = !row.is_active;
+      endInp.addEventListener('change', function(){ template[i].end_time = endInp.value; });
+      endTd.appendChild(endInp);
+      tr.appendChild(endTd);
+
+      templateBody.appendChild(tr);
+    });
+  }
+
+  async function loadTemplate(){
+    var { data, error } = await supabase.from('availability_template').select('*');
+    if(error){ showMsg(adminError, 'Could not load weekly hours: ' + error.message); return; }
+    var rows = defaultTemplate();
+    (data || []).forEach(function(found){
+      rows[found.weekday] = {
+        weekday: found.weekday,
+        is_active: found.is_active,
+        start_time: toHHMM(found.start_time),
+        end_time: toHHMM(found.end_time)
+      };
+    });
+    template = rows;
+    renderTemplate();
+  }
+
+  async function saveTemplate(){
+    clearMsgs();
+    document.getElementById('saveTemplateBtn').disabled = true;
+    var del = await supabase.from('availability_template').delete().gte('weekday', 0);
+    if(del.error){ showMsg(adminError, 'Could not save weekly hours: ' + del.error.message); document.getElementById('saveTemplateBtn').disabled = false; return; }
+    var ins = await supabase.from('availability_template').insert(template.map(function(r){
+      return { weekday: r.weekday, is_active: r.is_active, start_time: r.start_time, end_time: r.end_time };
+    }));
+    document.getElementById('saveTemplateBtn').disabled = false;
+    if(ins.error){ showMsg(adminError, 'Could not save weekly hours: ' + ins.error.message); return; }
+    showMsg(adminSuccess, 'Weekly hours saved.');
+  }
+
+  function addMinutes(hhmm, mins){
+    var parts = hhmm.split(':');
+    var total = parseInt(parts[0],10) * 60 + parseInt(parts[1],10) + mins;
+    var h = Math.floor(total / 60);
+    var m = total % 60;
+    return (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m);
+  }
+
+  function dateToStr(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  async function generateSlots(){
+    clearMsgs();
+    var weeks = parseInt(document.getElementById('genWeeks').value, 10) || 8;
+    var duration = parseInt(document.getElementById('genDuration').value, 10) || 45;
+    var days = weeks * 7;
+
+    var activeByWeekday = {};
+    template.forEach(function(r){ if(r.is_active) activeByWeekday[r.weekday] = r; });
+
+    var rows = [];
+    var today = new Date();
+    for(var i=0; i<days; i++){
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      var tmpl = activeByWeekday[d.getDay()];
+      if(!tmpl) continue;
+      var cursor = tmpl.start_time;
+      while(cursor < tmpl.end_time){
+        var next = addMinutes(cursor, duration);
+        if(next > tmpl.end_time) break;
+        rows.push({ slot_date: dateToStr(d), start_time: cursor, end_time: next });
+        cursor = next;
+      }
+    }
+
+    if(rows.length === 0){ showMsg(adminError, 'No active weekly hours to generate from — set your hours above first.'); return; }
+
+    document.getElementById('generateBtn').disabled = true;
+    var { error, count } = await supabase.from('slots').upsert(rows, { onConflict: 'slot_date,start_time', ignoreDuplicates: true, count: 'exact' });
+    document.getElementById('generateBtn').disabled = false;
+
+    if(error){ showMsg(adminError, 'Could not generate slots: ' + error.message); return; }
+    showMsg(adminSuccess, 'Generated slots through the next ' + weeks + ' week(s).');
+    loadSlotsAndBookings();
+  }
+
+  async function addOneOff(){
+    clearMsgs();
+    var date = document.getElementById('oneOffDate').value;
+    var start = document.getElementById('oneOffStart').value;
+    var end = document.getElementById('oneOffEnd').value;
+    if(!date || !start || !end){ showMsg(adminError, 'Fill in date, start and end time.'); return; }
+
+    document.getElementById('addOneOffBtn').disabled = true;
+    var { error } = await supabase.from('slots').insert({ slot_date: date, start_time: start, end_time: end });
+    document.getElementById('addOneOffBtn').disabled = false;
+
+    if(error){ showMsg(adminError, 'Could not add that time: ' + error.message); return; }
+    showMsg(adminSuccess, 'Added.');
+    document.getElementById('oneOffDate').value = '';
+    document.getElementById('oneOffStart').value = '';
+    document.getElementById('oneOffEnd').value = '';
+    loadSlotsAndBookings();
+  }
+
+  async function deleteSlot(id){
+    clearMsgs();
+    var { error } = await supabase.from('slots').delete().eq('id', id);
+    if(error){ showMsg(adminError, 'Could not remove that time: ' + error.message); return; }
+    loadSlotsAndBookings();
+  }
+
+  async function cancelBooking(id){
+    clearMsgs();
+    var { error } = await supabase.rpc('admin_cancel_booking', { p_booking_id: id });
+    if(error){ showMsg(adminError, 'Could not cancel that booking: ' + error.message); return; }
+    showMsg(adminSuccess, 'Booking cancelled and the time freed back up.');
+    loadSlotsAndBookings();
+  }
+
+  async function loadSlotsAndBookings(){
+    var today = dateToStr(new Date());
+    var slotsRes = await supabase.from('slots').select('*').gte('slot_date', today).order('slot_date').order('start_time').limit(1000);
+    var bookingsRes = await supabase.from('bookings').select('*, slots(slot_date, start_time, end_time)').order('created_at', { ascending: false }).limit(200);
+
+    if(slotsRes.error){ showMsg(adminError, 'Could not load times: ' + slotsRes.error.message); return; }
+    var slots = slotsRes.data || [];
+    var openCount = slots.filter(function(s){ return !s.is_booked; }).length;
+    var bookedCount = slots.filter(function(s){ return s.is_booked; }).length;
+    upcomingHeading.textContent = 'Upcoming times (' + openCount + ' open, ' + bookedCount + ' booked)';
+
+    slotsBody.innerHTML = '';
+    slotsEmpty.style.display = slots.length === 0 ? 'block' : 'none';
+    slots.forEach(function(s){
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + s.slot_date + '</td>' +
+        '<td class="mono">' + toHHMM(s.start_time) + ' – ' + toHHMM(s.end_time) + '</td>' +
+        '<td><span class="pill ' + (s.is_booked ? 'booked' : 'open') + '">' + (s.is_booked ? 'Booked' : 'Open') + '</span></td>' +
+        '<td></td>';
+      if(!s.is_booked){
+        var btn = document.createElement('button');
+        btn.className = 'btn-danger'; btn.type = 'button'; btn.textContent = 'Remove';
+        btn.addEventListener('click', function(){ deleteSlot(s.id); });
+        tr.lastElementChild.appendChild(btn);
+      }
+      slotsBody.appendChild(tr);
+    });
+
+    if(bookingsRes.error){ showMsg(adminError, 'Could not load bookings: ' + bookingsRes.error.message); return; }
+    var bookings = bookingsRes.data || [];
+    bookingsBody.innerHTML = '';
+    bookingsEmpty.style.display = bookings.length === 0 ? 'block' : 'none';
+    bookings.forEach(function(b){
+      var when = b.slots ? (b.slots.slot_date + ' ' + toHHMM(b.slots.start_time)) : '—';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="mono">' + when + '</td>' +
+        '<td>' + b.customer_name + '<br><span style="color:var(--text-dim);font-size:0.82rem;">' + b.customer_phone + (b.customer_email ? ' · ' + b.customer_email : '') + '</span>' +
+          (b.notes ? '<div style="color:var(--text-dim);font-size:0.82rem;margin-top:4px;">' + b.notes + '</div>' : '') + '</td>' +
+        '<td>' + (b.service || '—') + '</td>' +
+        '<td><span class="pill ' + (b.status === 'cancelled' ? 'cancelled' : 'booked') + '">' + b.status + '</span></td>' +
+        '<td></td>';
+      if(b.status === 'confirmed'){
+        var btn = document.createElement('button');
+        btn.className = 'btn-danger'; btn.type = 'button'; btn.textContent = 'Cancel';
+        btn.addEventListener('click', function(){ cancelBooking(b.id); });
+        tr.lastElementChild.appendChild(btn);
+      }
+      bookingsBody.appendChild(tr);
+    });
+  }
+
+  async function showDashboard(){
+    loginShell.style.display = 'none';
+    adminShell.style.display = 'block';
+    await loadTemplate();
+    await loadSlotsAndBookings();
+  }
+
+  function showLogin(){
+    adminShell.style.display = 'none';
+    loginShell.style.display = 'flex';
+  }
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    loginError.classList.remove('is-visible');
+    loginSubmit.disabled = true;
+    loginSubmit.textContent = 'Signing in…';
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    var { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+    loginSubmit.disabled = false;
+    loginSubmit.textContent = 'Sign in';
+    if(error){
+      loginError.textContent = error.message === 'Invalid login credentials' ? 'Wrong email or password.' : error.message;
+      loginError.classList.add('is-visible');
+      return;
+    }
+    showDashboard();
+  });
+
+  signOutBtn.addEventListener('click', async function(){
+    await supabase.auth.signOut();
+    showLogin();
+  });
+
+  document.getElementById('saveTemplateBtn').addEventListener('click', saveTemplate);
+  document.getElementById('generateBtn').addEventListener('click', generateSlots);
+  document.getElementById('addOneOffBtn').addEventListener('click', addOneOff);
+
+  supabase.auth.getSession().then(function(res){
+    if(res.data && res.data.session){ showDashboard(); } else { showLogin(); }
+  });
+})();
+</script>
