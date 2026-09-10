@@ -148,6 +148,27 @@
   </div>
 </div>
 
+<div class="login-shell" id="resetShell" style="display:none;">
+  <div class="login-card">
+    <a href="/" class="wordmark">MAI<span class="dot">·</span>BARBERS</a>
+    <h1 style="margin-top:18px;">Set a new password</h1>
+    <p class="lede">Choose a password for your admin login. At least 8 characters.</p>
+    <div class="form-status error" id="resetError"></div>
+    <div class="form-status success" id="resetSuccess"></div>
+    <form id="resetForm">
+      <div class="field">
+        <label for="resetPassword">New password</label>
+        <input type="password" id="resetPassword" required autocomplete="new-password" minlength="8">
+      </div>
+      <div class="field">
+        <label for="resetPasswordConfirm">Confirm new password</label>
+        <input type="password" id="resetPasswordConfirm" required autocomplete="new-password" minlength="8">
+      </div>
+      <button class="btn btn-solid" type="submit" id="resetSubmit" style="justify-content:center;">Set password</button>
+    </form>
+  </div>
+</div>
+
 <div class="admin-shell" id="adminShell">
   <div class="admin-header">
     <a href="/" class="wordmark">MAI<span class="dot">·</span>BARBERS <span style="color:var(--text-dim);font-size:0.65rem;margin-left:8px;letter-spacing:0.1em;">ADMIN</span></a>
@@ -242,11 +263,17 @@
   var WEEKDAY_LABELS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
   var loginShell = document.getElementById('loginShell');
+  var resetShell = document.getElementById('resetShell');
   var adminShell = document.getElementById('adminShell');
   var loginForm = document.getElementById('loginForm');
   var loginError = document.getElementById('loginError');
   var loginSubmit = document.getElementById('loginSubmit');
   var signOutBtn = document.getElementById('signOutBtn');
+
+  var resetForm = document.getElementById('resetForm');
+  var resetError = document.getElementById('resetError');
+  var resetSuccess = document.getElementById('resetSuccess');
+  var resetSubmit = document.getElementById('resetSubmit');
 
   var adminSuccess = document.getElementById('adminSuccess');
   var adminError = document.getElementById('adminError');
@@ -541,6 +568,7 @@
 
   async function showDashboard(){
     loginShell.style.display = 'none';
+    resetShell.style.display = 'none';
     adminShell.style.display = 'block';
     await loadBarbers();
     await loadTemplate();
@@ -549,7 +577,14 @@
 
   function showLogin(){
     adminShell.style.display = 'none';
+    resetShell.style.display = 'none';
     loginShell.style.display = 'flex';
+  }
+
+  function showReset(){
+    adminShell.style.display = 'none';
+    loginShell.style.display = 'none';
+    resetShell.style.display = 'flex';
   }
 
   loginForm.addEventListener('submit', async function(e){
@@ -575,12 +610,52 @@
     showLogin();
   });
 
+  resetForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    resetError.classList.remove('is-visible');
+    resetSuccess.classList.remove('is-visible');
+    var pw = document.getElementById('resetPassword').value;
+    var pw2 = document.getElementById('resetPasswordConfirm').value;
+    if(pw.length < 8){
+      resetError.textContent = 'Password needs to be at least 8 characters.';
+      resetError.classList.add('is-visible');
+      return;
+    }
+    if(pw !== pw2){
+      resetError.textContent = 'Passwords don\'t match.';
+      resetError.classList.add('is-visible');
+      return;
+    }
+    resetSubmit.disabled = true;
+    resetSubmit.textContent = 'Saving…';
+    var { error } = await supabase.auth.updateUser({ password: pw });
+    resetSubmit.disabled = false;
+    resetSubmit.textContent = 'Set password';
+    if(error){
+      resetError.textContent = error.message;
+      resetError.classList.add('is-visible');
+      return;
+    }
+    resetSuccess.textContent = 'Password set. Taking you to the dashboard…';
+    resetSuccess.classList.add('is-visible');
+    try{ history.replaceState(null, '', window.location.pathname); }catch(e){}
+    setTimeout(showDashboard, 900);
+  });
+
   document.getElementById('saveTemplateBtn').addEventListener('click', saveTemplate);
   document.getElementById('generateBtn').addEventListener('click', generateSlots);
   document.getElementById('addOneOffBtn').addEventListener('click', addOneOff);
 
-  supabase.auth.getSession().then(function(res){
-    if(res.data && res.data.session){ showDashboard(); } else { showLogin(); }
+  supabase.auth.onAuthStateChange(function(event, session){
+    if(event === 'PASSWORD_RECOVERY'){ showReset(); }
   });
+
+  if(window.location.hash && window.location.hash.indexOf('type=recovery') !== -1){
+    showReset();
+  } else {
+    supabase.auth.getSession().then(function(res){
+      if(res.data && res.data.session){ showDashboard(); } else { showLogin(); }
+    });
+  }
 })();
 </script>
