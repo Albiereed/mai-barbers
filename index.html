@@ -599,6 +599,33 @@
   .book-loading{color:var(--text-dim);font-size:0.9rem;padding:10px 0;}
   #contactStep{display:none;}
   #contactStep.is-visible{display:block;}
+
+  .barber-strip{display:flex;gap:12px;flex-wrap:wrap;}
+  .barber-card{
+    flex:1;
+    min-width:150px;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    padding:14px 16px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:var(--bg);
+    color:var(--text);
+    text-align:left;
+  }
+  .barber-card .b-name{
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:800;
+    font-size:1.15rem;
+    text-transform:uppercase;
+    line-height:1;
+  }
+  .barber-card .b-role{font-size:0.78rem;color:var(--text-dim);}
+  .barber-card.is-active{background:var(--accent);border-color:var(--accent);}
+  .barber-card.is-active .b-role{color:var(--accent-ink);opacity:0.85;}
+  .barber-card.is-active .b-name{color:var(--accent-ink);}
+  .barber-card:hover{border-color:var(--accent);}
 </style>
 
 <header class="top">
@@ -809,17 +836,22 @@
 
         <div id="bookingWidget" class="book-steps" style="display:none;">
           <div>
-            <p class="book-step-label">1 · Choose a day</p>
+            <p class="book-step-label">1 · Choose your barber</p>
+            <div class="barber-strip" id="barberStrip"></div>
+          </div>
+
+          <div>
+            <p class="book-step-label">2 · Choose a day</p>
             <div class="date-strip" id="dateStrip"></div>
           </div>
 
           <div id="timeStep">
-            <p class="book-step-label">2 · Choose a time</p>
+            <p class="book-step-label">3 · Choose a time</p>
             <div class="time-grid" id="timeGrid"></div>
           </div>
 
           <div id="contactStep">
-            <p class="book-step-label">3 · Your details</p>
+            <p class="book-step-label">4 · Your details</p>
             <div class="selected-summary" id="selectedSummary" style="margin-bottom:18px;"></div>
 
             <form id="bookingForm">
@@ -938,6 +970,7 @@
 
     var loadingEl = document.getElementById('bookingLoading');
     var widgetEl = document.getElementById('bookingWidget');
+    var barberStripEl = document.getElementById('barberStrip');
     var dateStripEl = document.getElementById('dateStrip');
     var timeGridEl = document.getElementById('timeGrid');
     var contactStepEl = document.getElementById('contactStep');
@@ -950,12 +983,18 @@
     var form = document.getElementById('bookingForm');
     var submitBtn = document.getElementById('bookingSubmit');
 
-    var allSlots = [];      // flat list of open slots from Supabase
-    var byDate = {};        // slot_date -> [slots]
+    var barbers = [];           // [{id, name, role}]
+    var byBarberDate = {};      // barber_id -> { slot_date -> [slots] }
+    var selectedBarberId = null;
     var selectedDate = null;
     var selectedSlot = null;
 
     var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    function barberById(id){
+      for(var i=0;i<barbers.length;i++){ if(barbers[i].id === id) return barbers[i]; }
+      return null;
+    }
 
     function fmtTime(hhmmss){
       var parts = hhmmss.split(':');
@@ -986,46 +1025,89 @@
     async function loadSlots(){
       clearMessages();
       loadingEl.style.display = 'block';
+      loadingEl.textContent = 'Loading available times…';
       widgetEl.style.display = 'none';
 
-      var { data, error } = await supabase
+      var barbersRes = await supabase
+        .from('barbers')
+        .select('id, name, role')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if(barbersRes.error){
+        loadingEl.style.display = 'block';
+        showError('Couldn\'t load available times.', 'Please refresh the page, or reach us on Instagram / Facebook to book.');
+        return;
+      }
+      barbers = barbersRes.data || [];
+
+      var slotsRes = await supabase
         .from('slots')
-        .select('id, slot_date, start_time, end_time')
+        .select('id, slot_date, start_time, end_time, barber_id')
         .order('slot_date', { ascending: true })
         .order('start_time', { ascending: true })
-        .limit(500);
+        .limit(1000);
 
       loadingEl.style.display = 'none';
 
-      if(error){
+      if(slotsRes.error){
         widgetEl.style.display = 'none';
         showError('Couldn\'t load available times.', 'Please refresh the page, or reach us on Instagram / Facebook to book.');
         return;
       }
 
-      allSlots = data || [];
-      byDate = {};
-      allSlots.forEach(function(s){
-        if(!byDate[s.slot_date]) byDate[s.slot_date] = [];
-        byDate[s.slot_date].push(s);
+      byBarberDate = {};
+      (slotsRes.data || []).forEach(function(s){
+        if(!byBarberDate[s.barber_id]) byBarberDate[s.barber_id] = {};
+        if(!byBarberDate[s.barber_id][s.slot_date]) byBarberDate[s.barber_id][s.slot_date] = [];
+        byBarberDate[s.barber_id][s.slot_date].push(s);
       });
 
-      if(allSlots.length === 0){
+      if(barbers.length === 0){
         widgetEl.style.display = 'none';
         loadingEl.style.display = 'block';
-        loadingEl.textContent = 'No open times right now — check back soon, or message us on Instagram / Facebook.';
+        loadingEl.textContent = 'Online booking isn\'t set up yet — please message us on Instagram / Facebook to book.';
         return;
       }
 
       widgetEl.style.display = 'grid';
-      renderDateStrip();
-
-      var dates = Object.keys(byDate).sort();
-      selectDate(selectedDate && byDate[selectedDate] ? selectedDate : dates[0]);
+      renderBarberStrip();
+      selectBarber(selectedBarberId && barberById(selectedBarberId) ? selectedBarberId : barbers[0].id);
     }
 
-    function renderDateStrip(){
-      var dates = Object.keys(byDate).sort();
+    function renderBarberStrip(){
+      barberStripEl.innerHTML = '';
+      barbers.forEach(function(b){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'barber-card' + (b.id === selectedBarberId ? ' is-active' : '');
+        btn.innerHTML = '<span class="b-name">' + b.name + '</span>' + (b.role ? '<span class="b-role">' + b.role + '</span>' : '');
+        btn.addEventListener('click', function(){ selectBarber(b.id); });
+        barberStripEl.appendChild(btn);
+      });
+    }
+
+    function selectBarber(barberId){
+      selectedBarberId = barberId;
+      selectedDate = null;
+      selectedSlot = null;
+      contactStepEl.classList.remove('is-visible');
+      renderBarberStrip();
+      var dates = Object.keys(byBarberDate[barberId] || {}).sort();
+      renderDateStrip(dates);
+      if(dates.length){
+        selectDate(dates[0]);
+      } else {
+        timeGridEl.innerHTML = '';
+        var b = barberById(barberId);
+        var p = document.createElement('p');
+        p.className = 'book-empty';
+        p.textContent = 'No open times with ' + (b ? b.name : 'this barber') + ' right now — try the other barber, or check back soon.';
+        timeGridEl.appendChild(p);
+      }
+    }
+
+    function renderDateStrip(dates){
       dateStripEl.innerHTML = '';
       dates.forEach(function(dateStr){
         var d = new Date(dateStr + 'T00:00:00');
@@ -1042,12 +1124,14 @@
       selectedDate = dateStr;
       selectedSlot = null;
       contactStepEl.classList.remove('is-visible');
-      renderDateStrip();
+      var dates = Object.keys(byBarberDate[selectedBarberId] || {}).sort();
+      renderDateStrip(dates);
       renderTimeGrid();
     }
 
     function renderTimeGrid(){
       timeGridEl.innerHTML = '';
+      var byDate = byBarberDate[selectedBarberId] || {};
       var slots = (byDate[selectedDate] || []).slice().sort(function(a,b){
         return a.start_time < b.start_time ? -1 : (a.start_time > b.start_time ? 1 : 0);
       });
@@ -1071,7 +1155,8 @@
     function selectSlot(s){
       selectedSlot = s;
       renderTimeGrid();
-      selectedSummaryEl.innerHTML = 'You\'ve picked <strong>' + fmtDateLong(s.slot_date) + ' at ' + fmtTime(s.start_time) + '</strong>';
+      var b = barberById(selectedBarberId);
+      selectedSummaryEl.innerHTML = 'You\'ve picked <strong>' + (b ? b.name : '') + ' — ' + fmtDateLong(s.slot_date) + ' at ' + fmtTime(s.start_time) + '</strong>';
       contactStepEl.classList.add('is-visible');
       contactStepEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -1109,7 +1194,8 @@
           return;
         }
 
-        successDetail.textContent = fmtDateLong(selectedSlot.slot_date) + ' at ' + fmtTime(selectedSlot.start_time) + '. See you then!';
+        var bkd = barberById(selectedBarberId);
+        successDetail.textContent = (bkd ? 'With ' + bkd.name + ', ' : '') + fmtDateLong(selectedSlot.slot_date) + ' at ' + fmtTime(selectedSlot.start_time) + '. See you then!';
         successBox.classList.add('is-visible');
         successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         form.reset();
